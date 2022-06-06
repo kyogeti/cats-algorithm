@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3ED6D9D0-8D0B-4F06-89DB-88FA31C2E4B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{622C7745-9357-4991-8A70-5EB252A809B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatAlg.Domain", "src\CatAlg.Domain\CatAlg.Domain.csproj", "{4C0A27BB-4D1C-4C1E-9CD1-602AE3B5614D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatAlg.UnitTests", "tests\CatAlg.UnitTests\CatAlg.UnitTests.csproj", "{BB14D5B4-ABFB-4B7A-B078-A6BE9480CD2A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4C0A27BB-4D1C-4C1E-9CD1-602AE3B5614D} = {3ED6D9D0-8D0B-4F06-89DB-88FA31C2E4B6}
+		{BB14D5B4-ABFB-4B7A-B078-A6BE9480CD2A} = {622C7745-9357-4991-8A70-5EB252A809B9}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4C0A27BB-4D1C-4C1E-9CD1-602AE3B5614D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C0A27BB-4D1C-4C1E-9CD1-602AE3B5614D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C0A27BB-4D1C-4C1E-9CD1-602AE3B5614D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C0A27BB-4D1C-4C1E-9CD1-602AE3B5614D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB14D5B4-ABFB-4B7A-B078-A6BE9480CD2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB14D5B4-ABFB-4B7A-B078-A6BE9480CD2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB14D5B4-ABFB-4B7A-B078-A6BE9480CD2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB14D5B4-ABFB-4B7A-B078-A6BE9480CD2A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
