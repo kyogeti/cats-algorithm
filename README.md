@@ -2,7 +2,7 @@
 
 ![Cats Algorithm](https://i.ytimg.com/vi/t0n2KUtuXYM/hqdefault.jpg)
 
-Um estudo sobre testes de integração e a sua importância no processo de desenvolvimento.
+Um estudo em .NET/C# sobre testes de integração e a sua importância no processo de desenvolvimento.
 
 ![Testes](https://github.com/kyogeti/cats-algorithm/actions/workflows/dotnet-test.yml/badge.svg)
 
