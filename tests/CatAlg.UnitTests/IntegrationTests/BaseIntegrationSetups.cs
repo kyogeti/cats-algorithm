@@ -20,18 +20,18 @@ namespace CatAlg.UnitTests.IntegrationTests
     public class BaseIntegrationSetups
     {
         private WireMockServer _server;
-        private IWillSmithDatabase _database;
+        private readonly IWillSmithDatabase _database;
         private readonly Fixture _fixture;
-        protected Mock<IHeadActions> _headActionsMock;
-        protected Mock<IPawsActions> _pawsActionsMock;
-        protected Mock<ICatRepository> _catRepository;
-        protected IProviderActions _providerActions;
+        protected Mock<IHeadActions> HeadActionsMock;
+        protected Mock<IPawsActions> PawsActionsMock;
+        protected Mock<ICatRepository> CatRepository;
+        private IProviderActions _providerActions;
 
         public BaseIntegrationSetups()
         {
-            _headActionsMock = new Mock<IHeadActions>();
-            _pawsActionsMock = new Mock<IPawsActions>();
-            _catRepository = new Mock<ICatRepository>();
+            HeadActionsMock = new Mock<IHeadActions>();
+            PawsActionsMock = new Mock<IPawsActions>();
+            CatRepository = new Mock<ICatRepository>();
             _database = WillSmithDatabase.GetInMemoryDatabase();
             
             _fixture = new Fixture();
@@ -61,14 +61,14 @@ namespace CatAlg.UnitTests.IntegrationTests
         protected CatService BuildCatService()
         {
             _providerActions = new ProviderActions(new RestClient(GetServerUrl()));
-            return new CatService("xpto", _headActionsMock.Object, _pawsActionsMock.Object, _providerActions, _catRepository.Object);
+            return new CatService("xpto", HeadActionsMock.Object, PawsActionsMock.Object, _providerActions, CatRepository.Object);
         }
 
         protected CatService BuildCatServiceWithDatabase()
         {
             _providerActions = new ProviderActions(new RestClient(GetServerUrl()));
             var catRepository = new CatRepository(_database);
-            return new CatService("xpto", _headActionsMock.Object, _pawsActionsMock.Object, _providerActions, catRepository);
+            return new CatService("xpto", HeadActionsMock.Object, PawsActionsMock.Object, _providerActions, catRepository);
         }
         
         protected void SetupUnsatisfiedCatAndGoodProvider()

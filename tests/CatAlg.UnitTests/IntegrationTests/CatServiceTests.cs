@@ -18,9 +18,9 @@ namespace CatAlg.UnitTests.IntegrationTests
 
         public CatServiceTests()
         {
-            _headActionsMock = new Mock<IHeadActions>();
-            _pawsActionsMock = new Mock<IPawsActions>();
-            _catRepository = new Mock<ICatRepository>();
+            HeadActionsMock = new Mock<IHeadActions>();
+            PawsActionsMock = new Mock<IPawsActions>();
+            CatRepository = new Mock<ICatRepository>();
             _fixture = new Fixture();
         }
 
@@ -35,7 +35,7 @@ namespace CatAlg.UnitTests.IntegrationTests
 
             catService.SeekSatisfaction();
 
-            _pawsActionsMock.Verify(x=> x.DoScratchFurniture(It.IsAny<Furniture>()), Times.AtLeastOnce);
+            PawsActionsMock.Verify(x=> x.DoScratchFurniture(It.IsAny<Furniture>()), Times.AtLeastOnce);
             StopServer();
         }
         
@@ -139,7 +139,7 @@ namespace CatAlg.UnitTests.IntegrationTests
 
             catService.Eat(DateTime.Now);
 
-            _headActionsMock.Verify(x=> x.DoMeow(It.IsAny<DateTime>()),
+            HeadActionsMock.Verify(x=> x.DoMeow(It.IsAny<DateTime>()),
                 Times.AtLeast(1));
             StopServer();
         }
@@ -183,7 +183,7 @@ namespace CatAlg.UnitTests.IntegrationTests
 
             catService.SeekSatisfaction();
 
-            _pawsActionsMock.Verify(x=> x.DoScratchFurniture(It.IsAny<Furniture>()), Times.AtLeastOnce);
+            PawsActionsMock.Verify(x=> x.DoScratchFurniture(It.IsAny<Furniture>()), Times.AtLeastOnce);
             StopServer();
         }
         
@@ -287,7 +287,7 @@ namespace CatAlg.UnitTests.IntegrationTests
 
             catService.Eat(DateTime.Now);
 
-            _headActionsMock.Verify(x=> x.DoMeow(It.IsAny<DateTime>()),
+            HeadActionsMock.Verify(x=> x.DoMeow(It.IsAny<DateTime>()),
                 Times.AtLeast(1));
             StopServer();
         }
