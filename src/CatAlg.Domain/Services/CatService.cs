@@ -10,14 +10,16 @@ namespace CatAlg.Domain.Services
         private readonly IHeadActions _headActions;
         private readonly IPawsActions _pawsActions;
         private readonly IProviderActions _providerActions;
+        private readonly ICatRepository _catRepository;
         private Cat _cat;
 
-        public CatService(string catName, IHeadActions headActions, IPawsActions pawsActions, IProviderActions providerActions)
+        public CatService(string catName, IHeadActions headActions, IPawsActions pawsActions, IProviderActions providerActions, ICatRepository catRepository)
         {
             _cat = new Cat(catName);
             _headActions = headActions;
             _pawsActions = pawsActions;
             _providerActions = providerActions;
+            _catRepository = catRepository;
         }
 
         public bool IsHungry() => _cat.IsHungry;
@@ -46,6 +48,8 @@ namespace CatAlg.Domain.Services
                     }
                 }
             }
+            
+            SaveCatStatus();
         }
 
         public void BeCarried()
@@ -62,6 +66,8 @@ namespace CatAlg.Domain.Services
                     _cat.MakeYouBetterRun();
                     break;
             }
+            
+            SaveCatStatus();
         }
 
         public void BeBellyScratched()
@@ -78,6 +84,8 @@ namespace CatAlg.Domain.Services
                     _cat.MakeYouBetterRun();
                     break;
             }
+            
+            SaveCatStatus();
         }
 
         public void Eat(DateTime hour)
@@ -98,6 +106,12 @@ namespace CatAlg.Domain.Services
             }
 
             _cat.MakeYouBetterRun();
+            SaveCatStatus();
+        }
+
+        public void SaveCatStatus()
+        {
+            _catRepository.SaveCatStatus(_cat);
         }
     }
 }

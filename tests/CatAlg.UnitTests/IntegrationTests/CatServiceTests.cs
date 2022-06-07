@@ -14,85 +14,311 @@ namespace CatAlg.UnitTests.IntegrationTests
 {
     public class CatServiceTests : BaseIntegrationSetups
     {
-        private readonly Mock<IHeadActions> _headActionsMock;
-        private readonly Mock<IPawsActions> _pawsActionsMock;
         private readonly Fixture _fixture;
-        private IProviderActions _providerActions;
 
         public CatServiceTests()
         {
             _headActionsMock = new Mock<IHeadActions>();
             _pawsActionsMock = new Mock<IPawsActions>();
+            _catRepository = new Mock<ICatRepository>();
             _fixture = new Fixture();
         }
-        
+
+        #region CatService only
+
         [Fact]
-        public void SeekSatisfaction_GivenUnsatisfiedCatAndGoodProvider_ShouldDoAsExpected()
+        public void SeekSatisfaction_GivenUnsatisfiedCatAndGoodProvider_ShouldHaveScratchedAtLeastOnce()
         {
             StartServer();
-            _providerActions = new ProviderActions(new RestClient(GetServerUrl()));
-            var catService = new CatService("xpto", _headActionsMock.Object, _pawsActionsMock.Object, _providerActions);
-            SetupGetRequest("/api/sleep-status",
-                _fixture.Build<SleepStatus>().With(x=> x.Sleeping, true).Create(), 
-                200);
-            SetupGetRequest("/api/food",
-                _fixture.Build<Food>().With(x=> x.IsYummy, true).Create(), 
-                200);
-            SetupGetRequest("/api/furniture",
-                _fixture.Build<Furniture>().With(x=> x.QualityStatus, Quality.New).CreateMany(5), 
-                200);
-            
+            var catService = BuildCatService();
+            SetupUnsatisfiedCatAndGoodProvider();
+
             catService.SeekSatisfaction();
 
             _pawsActionsMock.Verify(x=> x.DoScratchFurniture(It.IsAny<Furniture>()), Times.AtLeastOnce);
+            StopServer();
+        }
+        
+        [Fact]
+        public void SeekSatisfaction_GivenUnsatisfiedCatAndGoodProvider_ShouldNotBeHungry()
+        {
+            StartServer();
+            var catService = BuildCatService();
+            SetupUnsatisfiedCatAndGoodProvider();
+
+            catService.SeekSatisfaction();
+            
             catService.IsHungry().Should().BeFalse();
+            StopServer();
+        }
+        
+        [Fact]
+        public void SeekSatisfaction_GivenUnsatisfiedCatAndGoodProvider_IShouldNotRun()
+        {
+            StartServer();
+            var catService = BuildCatService();
+            SetupUnsatisfiedCatAndGoodProvider();
+
+            catService.SeekSatisfaction();
+            
             catService.ShouldIRun().Should().BeFalse();
+            StopServer();
+        }
+        
+        [Fact]
+        public void SeekSatisfaction_GivenUnsatisfiedCatAndGoodProvider_ShouldBeSatisfied()
+        {
+            StartServer();
+            var catService = BuildCatService();
+            SetupUnsatisfiedCatAndGoodProvider();
+
+            catService.SeekSatisfaction();
+            
             catService.IsSatisfied().Should().BeTrue();
             StopServer();
         }
 
         [Fact]
-        public void Eat_GivenCatAndGoodProvider_ShouldEatAndBeSatisfied()
+        public void Eat_GivenCatAndGoodProvider_ShouldNotBeHungry()
         {
             StartServer();
-            _providerActions = new ProviderActions(new RestClient(GetServerUrl()));
-            var catService = new CatService("xpto", _headActionsMock.Object, _pawsActionsMock.Object, _providerActions);
-            SetupGetRequest("/api/sleep-status",
-                _fixture.Build<SleepStatus>().With(x=> x.Sleeping, false).Create(), 
-                200);
-            SetupGetRequest("/api/food",
-                _fixture.Build<Food>().With(x=> x.IsYummy, true).Create(), 
-                200);
+            var catService = BuildCatService();
+            SetupGoodProvider();
             
             catService.Eat(DateTime.Now);
 
             catService.IsHungry().Should().BeFalse();
+            StopServer();
+        }
+        
+        [Fact]
+        public void Eat_GivenCatAndGoodProvider_IShouldNotRun()
+        {
+            StartServer();
+            var catService = BuildCatService();
+            SetupGoodProvider();
+            
+            catService.Eat(DateTime.Now);
+
             catService.ShouldIRun().Should().BeFalse();
+            StopServer();
+        }
+        
+        [Fact]
+        public void Eat_GivenCatAndGoodProvider_ShouldBeSatisfied()
+        {
+            StartServer();
+            var catService = BuildCatService();
+            SetupGoodProvider();
+            
+            catService.Eat(DateTime.Now);
+
             catService.IsSatisfied().Should().BeTrue();
             StopServer();
         }
         
         [Fact]
-        public void Eat_GivenCatAndSleepyProvider_ShouldEatAndBeSatisfiedAfterALotOfMeows()
+        public void Eat_GivenCatAndSleepyProvider_ShouldBeSatisfied()
         {
             StartServer();
-            _providerActions = new ProviderActions(new RestClient(GetServerUrl()));
-            var catService = new CatService("xpto", _headActionsMock.Object, _pawsActionsMock.Object, _providerActions);
-            SetupGetRequest("/api/sleep-status",
-                _fixture.Build<SleepStatus>().With(x=> x.Sleeping, true).Create(), 
-                200);
-            SetupGetRequest("/api/food",
-                _fixture.Build<Food>().With(x=> x.IsYummy, true).Create(), 
-                200);
-            
+            var catService = BuildCatService();
+            SetupSleepyProvider();
+
+            catService.Eat(DateTime.Now);
+
+            catService.IsSatisfied().Should().BeTrue();
+            StopServer();
+        }
+        
+        [Fact]
+        public void Eat_GivenCatAndSleepyProvider_ShouldMeowAtLeastOneTime()
+        {
+            StartServer();
+            var catService = BuildCatService();
+            SetupSleepyProvider();
+
             catService.Eat(DateTime.Now);
 
             _headActionsMock.Verify(x=> x.DoMeow(It.IsAny<DateTime>()),
                 Times.AtLeast(1));
+            StopServer();
+        }
+        
+        [Fact]
+        public void Eat_GivenCatAndSleepyProvider_ShouldNotBeHungry()
+        {
+            StartServer();
+            var catService = BuildCatService();
+            SetupSleepyProvider();
+
+            catService.Eat(DateTime.Now);
+
             catService.IsHungry().Should().BeFalse();
+            StopServer();
+        }
+        
+        [Fact]
+        public void Eat_GivenCatAndSleepyProvider_IShouldNotRun()
+        {
+            StartServer();
+            var catService = BuildCatService();
+            SetupSleepyProvider();
+
+            catService.Eat(DateTime.Now);
+            
             catService.ShouldIRun().Should().BeFalse();
+            StopServer();
+        }
+
+        #endregion
+
+        #region CatService + Database
+
+        [Fact]
+        public void SeekSatisfaction_GivenUnsatisfiedCatAndGoodProvider_WithDatabase_ShouldHaveScratchedAtLeastOnce()
+        {
+            StartServer();
+            var catService = BuildCatServiceWithDatabase();
+            SetupUnsatisfiedCatAndGoodProvider();
+
+            catService.SeekSatisfaction();
+
+            _pawsActionsMock.Verify(x=> x.DoScratchFurniture(It.IsAny<Furniture>()), Times.AtLeastOnce);
+            StopServer();
+        }
+        
+        [Fact]
+        public void SeekSatisfaction_GivenUnsatisfiedCatAndGoodProvider_WithDatabase_ShouldNotBeHungry()
+        {
+            StartServer();
+            var catService = BuildCatServiceWithDatabase();
+            SetupUnsatisfiedCatAndGoodProvider();
+
+            catService.SeekSatisfaction();
+            
+            catService.IsHungry().Should().BeFalse();
+            StopServer();
+        }
+        
+        [Fact]
+        public void SeekSatisfaction_GivenUnsatisfiedCatAndGoodProvider_WithDatabase_IShouldNotRun()
+        {
+            StartServer();
+            var catService = BuildCatServiceWithDatabase();
+            SetupUnsatisfiedCatAndGoodProvider();
+
+            catService.SeekSatisfaction();
+            
+            catService.ShouldIRun().Should().BeFalse();
+            StopServer();
+        }
+        
+        [Fact]
+        public void SeekSatisfaction_GivenUnsatisfiedCatAndGoodProvider_WithDatabase_ShouldBeSatisfied()
+        {
+            StartServer();
+            var catService = BuildCatServiceWithDatabase();
+            SetupUnsatisfiedCatAndGoodProvider();
+
+            catService.SeekSatisfaction();
+            
             catService.IsSatisfied().Should().BeTrue();
             StopServer();
         }
+
+        [Fact]
+        public void Eat_GivenCatAndGoodProvider_WithDatabase_ShouldNotBeHungry()
+        {
+            StartServer();
+            var catService = BuildCatServiceWithDatabase();
+            SetupGoodProvider();
+            
+            catService.Eat(DateTime.Now);
+
+            catService.IsHungry().Should().BeFalse();
+            StopServer();
+        }
+        
+        [Fact]
+        public void Eat_GivenCatAndGoodProvider_WithDatabase_IShouldNotRun()
+        {
+            StartServer();
+            var catService = BuildCatServiceWithDatabase();
+            SetupGoodProvider();
+            
+            catService.Eat(DateTime.Now);
+
+            catService.ShouldIRun().Should().BeFalse();
+            StopServer();
+        }
+        
+        [Fact]
+        public void Eat_GivenCatAndGoodProvider_WithDatabase_ShouldBeSatisfied()
+        {
+            StartServer();
+            var catService = BuildCatServiceWithDatabase();
+            SetupGoodProvider();
+            
+            catService.Eat(DateTime.Now);
+
+            catService.IsSatisfied().Should().BeTrue();
+            StopServer();
+        }
+        
+        [Fact]
+        public void Eat_GivenCatAndSleepyProvider_WithDatabase_ShouldBeSatisfied()
+        {
+            StartServer();
+            var catService = BuildCatServiceWithDatabase();
+            SetupSleepyProvider();
+
+            catService.Eat(DateTime.Now);
+
+            catService.IsSatisfied().Should().BeTrue();
+            StopServer();
+        }
+        
+        [Fact]
+        public void Eat_GivenCatAndSleepyProvider_WithDatabase_ShouldMeowAtLeastOneTime()
+        {
+            StartServer();
+            var catService = BuildCatServiceWithDatabase();
+            SetupSleepyProvider();
+
+            catService.Eat(DateTime.Now);
+
+            _headActionsMock.Verify(x=> x.DoMeow(It.IsAny<DateTime>()),
+                Times.AtLeast(1));
+            StopServer();
+        }
+        
+        [Fact]
+        public void Eat_GivenCatAndSleepyProvider_WithDatabase_ShouldNotBeHungry()
+        {
+            StartServer();
+            var catService = BuildCatServiceWithDatabase();
+            SetupSleepyProvider();
+
+            catService.Eat(DateTime.Now);
+
+            catService.IsHungry().Should().BeFalse();
+            StopServer();
+        }
+        
+        [Fact]
+        public void Eat_GivenCatAndSleepyProvider_WithDatabase_IShouldNotRun()
+        {
+            StartServer();
+            var catService = BuildCatServiceWithDatabase();
+            SetupSleepyProvider();
+
+            catService.Eat(DateTime.Now);
+            
+            catService.ShouldIRun().Should().BeFalse();
+            StopServer();
+        }
+
+        #endregion
+        
     }
 }

@@ -14,6 +14,7 @@ namespace CatAlg.UnitTests.UnitTests
         private readonly Mock<IHeadActions> _headActionsMock;
         private readonly Mock<IPawsActions> _pawsActionsMock;
         private readonly Mock<IProviderActions> _providerActionsMock;
+        private readonly Mock<ICatRepository> _catRepository;
         private CatService _catService;
 
         public CatServiceTests()
@@ -21,7 +22,8 @@ namespace CatAlg.UnitTests.UnitTests
             _headActionsMock = new Mock<IHeadActions>();
             _pawsActionsMock = new Mock<IPawsActions>();
             _providerActionsMock = new Mock<IProviderActions>();
-            _catService = new CatService("xpto", _headActionsMock.Object, _pawsActionsMock.Object, _providerActionsMock.Object);
+            _catRepository = new Mock<ICatRepository>();
+            _catService = new CatService("xpto", _headActionsMock.Object, _pawsActionsMock.Object, _providerActionsMock.Object, _catRepository.Object);
         }
         
         [Fact]
@@ -85,7 +87,7 @@ namespace CatAlg.UnitTests.UnitTests
         public void BeCarried_GivenSpecificCat_ShouldDoAsExpected(string catName, bool isSatisfied)
         {
             _catService = new CatService(catName, _headActionsMock.Object, _pawsActionsMock.Object,
-                _providerActionsMock.Object);
+                _providerActionsMock.Object, _catRepository.Object);
             
             DisturbTheCat(100, true);
             
@@ -100,7 +102,7 @@ namespace CatAlg.UnitTests.UnitTests
         public void ScratchBelly_GivenSpecificCat_ShouldDoAsExpected(string catName, bool isSatisfied)
         {
             _catService = new CatService(catName, _headActionsMock.Object, _pawsActionsMock.Object,
-                _providerActionsMock.Object);
+                _providerActionsMock.Object, _catRepository.Object);
             
             DisturbTheCat(100, false, true);
             
